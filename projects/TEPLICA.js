@@ -1,6 +1,4 @@
 
-
-
 var mqtt = require("tinyMQTT").create("m24.cloudmqtt.com", {
     clientId: "tdevice",
     username: "jriiypoc",
@@ -13,6 +11,7 @@ mqtt.on("connected", function(){
     mqtt.subscribe("/temp/get");
     mqtt.subscribe("/door/turn");
     mqtt.subscribe("/relay/turn");
+    mqtt.subscribe("/humidity/get");
     mqtt.publish("/teplica","Теплица подключилась к брокеру MQTT-сообщений"); 
 });
 
@@ -31,11 +30,11 @@ mqtt.on("disconnected", function(){
 var wifi = require("Wifi");
 var clients = [];
 
-//var WIFI_NAME = "cisco.irk.ru";
-//var WIFI_OPTIONS = { password : "Ve!c0dinC1n@" };
+var WIFI_NAME = "cisco.irk.ru";
+var WIFI_OPTIONS = { password : "Ve!c0dinC1n@" };
 
-var WIFI_NAME = "vaduga";
-var WIFI_OPTIONS = { password : "9501203230" };
+//var WIFI_NAME = "vaduga";
+//var WIFI_OPTIONS = { password : "9501203230" };
 
 
 wifi.connect(WIFI_NAME, WIFI_OPTIONS, function(err) {
@@ -61,6 +60,7 @@ wifi.connect(WIFI_NAME, WIFI_OPTIONS, function(err) {
 
 
 //// its mine
+var moistureSensor = require('moisturesensor').connect(NodeMCU.A0);
 var dht = require("DHT22").connect(NodeMCU.D7);
 var relay = 0;
 
@@ -91,6 +91,9 @@ case "/relay/turn":
     digitalWrite(NodeMCU.D3, relay);
     mqtt.publish("/relay", "at position "+ relay);
     break;
+case "/humidity/get":
+    mqtt.publish("/humidity", moistureSensor.getMoistureLevel().toString());
+         break;
   
 default:
     break;
