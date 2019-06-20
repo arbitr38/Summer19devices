@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en" >
+
+<head>
+  <meta charset="UTF-8">
+  <title>ОРАНЖЕРЕЯ. MQTT-client</title>
+  
+  
+  
+      <link rel="stylesheet" href="./style.css">
+
+  
+</head>
+
+<body>
+
+  <div id="container">
+<div id="left">
+Сайт для управления ОРАНЖЕРЕЕЙ <br><br>
+
+<button id="btn">Connect! / очистка журнала</button>
+<button id="door">Открыть (0.95) / закрыть форточку (0.05)</button>
+
+<br><br>
+
+
+<button id="getTemp">getTemp! один раз</button>
+<button id="getTempContinious">getTemp! каждые 2 сек. / остановить</button>
+<br><br><button id="pushRelay">Питание реле</button>
+<br><br>
+
+<div id="mqttMess">Журнал MQTT-сообщений: </div>
+  
+  </div>
+  
+<div id="right">  
+  <h2>API для фронтенда:</h2><br>
+  Отправлять команды функцией <b>Send ("тема","сообщение");</b><br>
+  "сообщение" значения не имеет, можно указать любое.
+  
+  <br>Плата реагирует на темы: <ul>
+  <li>"/temp/get"</li>
+  <li>"/door/turn"</li>
+  <li>"/relay/turn"</li>
+  </ul>
+  
+  В ответ присылает сообщения по темам:
+  
+  <ul>
+  <li>"/temp"</li>
+  <li>"/door"</li>
+  <li>"/relay"</li>
+  </ul>
+  На них мы должны быть подписаны. <br>
+  Редактировать функцию <b>"onMessageArrived"</b> если надо подробнее разобрать <br>входящие сообщения.<br>
+  <br>
+  Кнопка на плате открывает/закрывает сервопривод.<br>
+  Серво на картинке находится в положении 0.05 и может открываться до 0.95, <br>шаг до сотых долей (команды смотреть в обработчиках у кнопок).<br> 
+  
+  <br>Пины подключения устройств на плате:<br>
+  D1 - желтый от сервопривода<br>
+  D7 - фиалетовый от термометра<br>
+  D3 - реле (?) для вентилятора (заземлить в свободный G)<br>
+  <br>
+   <a href="http://pencode.ru/snap/%D1%82%D0%B5%D0%BF%D0%BB%D0%B8%D1%86%D0%B0_ESP8266.jpg" target=_blank>Картинка платы по ссылке</a>
+</div>
+  
+  
+</div>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.js'></script>
+
+  
+
+    <script  src="./script.js"></script>
+
+
+
+
+</body>
+
+</html>
