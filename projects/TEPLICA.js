@@ -82,14 +82,14 @@ case "/temp/get":
 case "/door/turn":
  if (isNaN(parseFloat(msg.message))===false) {
    s.move(msg.message, 5000);
-   mqtt.publish("/door", "at position "+ msg.message);
+   mqtt.publish("/door", msg.message);
                 }
     break;
     
 case "/relay/turn":
     relay = relay === 0? 1:0;
     digitalWrite(NodeMCU.D3, relay);
-    mqtt.publish("/relay", "at position "+ relay);
+    mqtt.publish("/relay", relay.toString());
     break;
 case "/humidity/get":
     mqtt.publish("/humidity", moistureSensor.getMoistureLevel().toString());
