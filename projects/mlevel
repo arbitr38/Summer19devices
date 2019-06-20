@@ -1,0 +1,3 @@
+moistureSensor = require('moisturesensor').connect(36);
+
+moistureSensor.getMoistureLevel();
