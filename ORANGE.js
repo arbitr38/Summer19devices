@@ -1,14 +1,19 @@
+
+
+
 var mqtt = require("tinyMQTT").create("m24.cloudmqtt.com", {
-    clientId: "odevice",
-    username: "dcgbvrdp",
-    password: "laxu4wz8J9fM",
-    port: 10372 
+  clientId: "odevice",
+  username: "dcgbvrdp",
+  password: "laxu4wz8J9fM",
+  port: 10372 
 });
 
 mqtt.on("connected", function(){
     console.log("on"); 
-    mqtt.subscribe("/orange");
-    mqtt.publish("/orange","Оранжерея-сервер подключилась к брокеру MQTT-сообщений"); 
+    mqtt.subscribe("/temp/get");
+    mqtt.subscribe("/door/turn");
+    mqtt.subscribe("/relay/turn");
+    mqtt.publish("/orange","Оранжерея подключилась к брокеру MQTT-сообщений"); 
 });
 
 
@@ -56,10 +61,10 @@ wifi.connect(WIFI_NAME, WIFI_OPTIONS, function(err) {
 
 
 //// its mine
-var btn = 'ON';
-var ledState = true;
-var arr = new Uint8ClampedArray(256*3);
-pinMode(NodeMCU.D4, 'input_pullup'); // для кнопки
+var dht = require("DHT22").connect(NodeMCU.D7);
+var relay = 0;
+
+pinMode(NodeMCU.D6, 'input_pullup'); // для кнопки
 
 
 // Incoming message handler
@@ -67,24 +72,44 @@ function msHandler (msg) {
     console.log(msg.topic);
     console.log(msg.message);
 
-    ledState = ledState ? false : true;  
-//    digitalWrite(D2, ledState); // system LED
-    digitalWrite(NodeMCU.D3, !ledState); // beeper + lamp
-//    switch (msg.message) {
-//  case "clear":
-//    break;
+    digitalWrite(D2, false);
+  setTimeout("digitalWrite(D2, true)",500); // system LED
+// digitalWrite(NodeMCU.D3, !ledState); 
+switch (msg.topic) {
+case "/temp/get":
+ sendTemp();
+    break;
+case "/door/turn":
+ if (isNaN(parseFloat(msg.message))===false) {
+   s.move(msg.message, 5000);
+   mqtt.publish("/door", "at position "+ msg.message);
+                }
+    break;
+    
+case "/relay/turn":
+    relay = relay === 0? 1:0;
+    digitalWrite(NodeMCU.D3, relay);
+    mqtt.publish("/relay", "at position "+ relay);
+    break;
   
-//  default:
-//    break;
+default:
+    break;
+                 }
 }
     
 mqtt.on("message", msHandler);
   
 
 // Watch for button events (rising and falling)
+var door = 0.05;
+var s = require("servo").connect(NodeMCU.D1);
+
 setWatch(evt => {
-mqtt.publish("/orange", btn);
-btn =  btn == 'OFF' ? 'ON' : 'OFF';
-}, NodeMCU.D4, {repeat: true, edge: 'falling', debounce: 50});
+door = door==0.05 ? 1 : 0.05;
+s.move(door, 5000); 
+mqtt.publish("/door", door==0.05 ? "closed" : "opened");
+}, NodeMCU.D6, {repeat: true, edge: 'falling', debounce: 50});
 
-
+function sendTemp () {
+  dht.read( (a)=> mqtt.publish("/temp", a.temp.toString())  );
+}
