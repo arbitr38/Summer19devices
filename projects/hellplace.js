@@ -9,6 +9,7 @@ mqtt.on("connected", function(){
     console.log("on"); 
     mqtt.subscribe("/feeder/get");
   mqtt.subscribe("/feeder/count");
+  mqtt.subscribe("/temp/get");
     mqtt.publish("/feeder","Кормушка подключилась к MQTT"); 
 });
 
@@ -56,7 +57,7 @@ wifi.connect(WIFI_NAME, WIFI_OPTIONS, function(err) {
 
 /////////////////////////////////////
 
-
+var dht = require("DHT22").connect(NodeMCU.D1);  // датчик температуры
 var StepperMotor = require("StepperMotor"); /// шаговый мотор для шнека (сыпать корм)
 
 var motor = new StepperMotor({
@@ -106,7 +107,9 @@ switch (msg.topic) {
 case "/feeder/get":
  mqtt.publish("/feeder/count",birds.toString()); 
     break;
-
+case "/temp/get":
+ dht.read( (a)=> mqtt.publish("/temp", a.temp.toString())  );
+    break;
 default:
     break;
                  }
