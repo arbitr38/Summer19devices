@@ -10,6 +10,8 @@ mqtt.on("connected", function(){
     mqtt.subscribe("/feeder/get");
   mqtt.subscribe("/feeder/count");
   mqtt.subscribe("/temp/get");
+  mqtt.subscribe("/door/turn");
+  
     mqtt.publish("/feeder","Кормушка подключилась к MQTT"); 
 });
 
@@ -91,7 +93,7 @@ setInterval(corn, 150);
 
 
 
-
+var door = false;
 
 // Incoming message handler
 
@@ -109,6 +111,15 @@ case "/feeder/get":
     break;
 case "/temp/get":
  dht.read( (a)=> mqtt.publish("/temp", a.temp.toString())  );
+    break;
+case "/door/turn":
+    
+ if (door === false) {motor.moveTo(motor.getPosition()+400);} 
+ else motor.moveTo(motor.getPosition()-400); 
+    door = !door;
+    
+    
+    
     break;
 default:
     break;
