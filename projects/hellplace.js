@@ -7,7 +7,7 @@ var mqtt = require("tinyMQTT").create("postman.cloudmqtt.com", {
 
 mqtt.on("connected", function(){
     console.log("on"); 
-    mqtt.subscribe("/feeder/get");
+  mqtt.subscribe("/feeder/get");
   mqtt.subscribe("/feeder/count");
   mqtt.subscribe("/temp/get");
   mqtt.subscribe("/door/turn");
@@ -28,13 +28,12 @@ mqtt.on("disconnected", function(){
 
 
 var wifi = require("Wifi");
-var clients = [];
 
-//ar WIFI_NAME = "cisco.irk.ru";
-//var WIFI_OPTIONS = { password : "Ve!c0dinC1n@" };
+var WIFI_NAME = "cisco.irk.ru";
+var WIFI_OPTIONS = { password : "Ve!c0dinC1n@" };
 
-var WIFI_NAME = "vaduga";
-var WIFI_OPTIONS = { password : "9501203230" };
+//var WIFI_NAME = "vaduga";
+//var WIFI_OPTIONS = { password : "9501203230" };
 
 
 wifi.connect(WIFI_NAME, WIFI_OPTIONS, function(err) {
